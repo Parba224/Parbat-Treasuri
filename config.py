@@ -1,0 +1,5 @@
+MIN_CASH_BUFFER = 25000
+ANNUAL_YIELD = 0.04
+GOCARDLESS_SECRET_ID = ""
+GOCARDLESS_SECRET_KEY = ""
+GOCARDLESS_BASE_URL = "https://bankaccountdata.gocardless.com/api/v2"

@@ -1,0 +1,16 @@
+date,description,amount,balance
+2026-05-01,Stripe Payout,12000,45000
+2026-05-02,Office Rent,-2500,42500
+2026-05-03,Salary Payroll,-7000,35500
+2026-05-04,Supplier Invoice,-3200,32300
+2026-05-05,Stripe Payout,15000,47300
+2026-05-06,Adobe Subscription,-120,47180
+2026-05-07,AWS Hosting,-340,46840
+2026-05-08,VAT Payment,-3500,43340
+2026-05-09,Google Workspace,-90,43250
+2026-05-10,Client Wire Transfer,10000,53250
+2026-05-11,Slack Subscription,-80,53170
+2026-05-12,Supplier Invoice,-2800,50370
+2026-05-13,Salary Payroll,-7000,43370
+2026-05-14,Office Rent,-2500,40870
+2026-05-15,Stripe Payout,17000,57870
