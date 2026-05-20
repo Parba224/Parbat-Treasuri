@@ -5,3 +5,4 @@ sqlalchemy
 reportlab
 openpyxl
 bcrypt
+supabase

@@ -1,8 +1,14 @@
+from supabase import create_client
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 import bcrypt
+
+SUPABASE_URL = st.secrets["supabase"]["url"]
+SUPABASE_KEY = st.secrets["supabase"]["key"]
+
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 from config import MIN_CASH_BUFFER, ANNUAL_YIELD
 from treasury_engine import calculate_treasury_metrics
@@ -480,7 +486,11 @@ company_name = st.sidebar.text_input(
 )
 
 if st.sidebar.button(T["create_company"]):
-    create_company(company_name)
+
+    supabase.table("companies").insert({
+        "name": company_name
+    }).execute()
+
     st.sidebar.success(T["company_created"])
 
 companies = get_companies()
