@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
-import bcrypt
 
 from config import MIN_CASH_BUFFER, ANNUAL_YIELD
 from treasury_engine import calculate_treasury_metrics
@@ -20,8 +19,10 @@ from database import (
 st.set_page_config(page_title="Parbat Treasury", layout="wide")
 init_database()
 
+import bcrypt
+
 # =========================
-# LOGIN
+# SIMPLE LOGIN
 # =========================
 
 def check_login():
@@ -41,9 +42,27 @@ def check_login():
 
         return True
 
-    st.title("Tesorería Parbat")
-    st.caption("Acceso privado al dashboard treasury.")
-    st.markdown("---")
+st.markdown("""
+<div style="
+    max-width:520px;
+    margin:80px auto;
+    background:white;
+    padding:34px;
+    border-radius:24px;
+    border:1px solid #e5e7eb;
+    box-shadow:0 20px 45px rgba(15,23,42,0.08);
+">
+
+<h1 style="margin-bottom:8px;color:#0f172a;">
+Tesorería Parbat
+</h1>
+
+<p style="color:#64748b;margin-bottom:24px;">
+Acceso privado al dashboard treasury.
+</p>
+
+</div>
+""", unsafe_allow_html=True)
 
     username = st.text_input("Usuario")
 
@@ -61,6 +80,7 @@ def check_login():
                 st.secrets["auth"]["password_hash"].encode()
             )
         ):
+
             st.session_state["authenticated"] = True
             st.rerun()
 
@@ -72,11 +92,6 @@ def check_login():
 
 if not check_login():
     st.stop()
-
-
-# =========================
-# TEXTS
-# =========================
 
 TEXTS = {
     "English": {
@@ -134,8 +149,6 @@ TEXTS = {
         "critical": "CRITICAL",
         "ai_actions": "AI Treasury Actions",
         "ai_actions_sub": "Automated treasury recommendations based on the current liquidity profile.",
-        "alerts": "Treasury Alerts",
-        "alerts_sub": "Automated risk, liquidity and opportunity signals.",
         "scenario_simulator": "Scenario Simulator",
         "scenario_simulator_sub": "Compare liquidity resilience under different CFO scenarios.",
     },
@@ -195,17 +208,13 @@ TEXTS = {
         "critical": "CRÍTICO",
         "ai_actions": "Acciones Treasury IA",
         "ai_actions_sub": "Recomendaciones automáticas según el perfil actual de liquidez.",
+
         "alerts": "Alertas Treasury",
         "alerts_sub": "Señales automáticas de riesgo, liquidez y oportunidad.",
         "scenario_simulator": "Simulador de Escenarios",
         "scenario_simulator_sub": "Compara la resistencia de liquidez bajo distintos escenarios CFO.",
     }
 }
-
-
-# =========================
-# CSS
-# =========================
 
 st.markdown("""
 <style>
@@ -434,11 +443,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-
-# =========================
-# LANGUAGE
-# =========================
-
 language = st.sidebar.selectbox(
     "Language / Idioma",
     ["English", "Español"],
@@ -446,11 +450,6 @@ language = st.sidebar.selectbox(
 )
 
 T = TEXTS[language]
-
-
-# =========================
-# DATA
-# =========================
 
 uploaded_file = st.sidebar.file_uploader(
     T["upload"],
@@ -463,11 +462,6 @@ else:
     raw_df = pd.read_csv("data/demo_transactions.csv")
 
 df = normalize_bank_data(raw_df)
-
-
-# =========================
-# SIDEBAR
-# =========================
 
 st.sidebar.markdown("## Parbat Treasury")
 st.sidebar.divider()
@@ -517,11 +511,6 @@ annual_yield = st.sidebar.slider(
     format="%.3f"
 )
 
-
-# =========================
-# METRICS
-# =========================
-
 metrics = calculate_treasury_metrics(
     df,
     min_cash_buffer,
@@ -566,11 +555,6 @@ else:
     liquidity_status = T["critical"]
     badge_class = "badge-bad"
 
-
-# =========================
-# HERO
-# =========================
-
 st.markdown(f"""
 <div class="hero">
     <div class="hero-title">{T["hero_title"]}</div>
@@ -587,22 +571,12 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-
-# =========================
-# TABS
-# =========================
-
 tab1, tab2, tab3, tab4 = st.tabs([
     "Overview",
     "Treasury",
     "Forecast",
     "Reports"
 ])
-
-
-# =========================
-# TAB 1 — OVERVIEW
-# =========================
 
 with tab1:
 
@@ -648,7 +622,10 @@ with tab1:
         (T["annual_potential"], metrics["annual_potential_return"], T["annual_estimate"]),
     ]
 
-    for col, (label, value, sub) in zip([k1, k2, k3, k4], kpis):
+    for col, (label, value, sub) in zip(
+        [k1, k2, k3, k4],
+        kpis
+    ):
         with col:
             st.markdown(f"""
             <div class="kpi-card">
@@ -669,7 +646,10 @@ with tab1:
         (T["runway"], f"{metrics['runway_months']:.1f} {T['months']}"),
     ]
 
-    for col, (label, value) in zip([s1, s2, s3, s4], secondary):
+    for col, (label, value) in zip(
+        [s1, s2, s3, s4],
+        secondary
+    ):
         with col:
             st.markdown(f"""
             <div class="light-card">
@@ -715,7 +695,10 @@ with tab1:
         legend=dict(orientation="h", y=1.05, x=1, xanchor="right")
     )
 
-    st.plotly_chart(fig_balance, use_container_width=True)
+    st.plotly_chart(
+        fig_balance,
+        use_container_width=True
+    )
 
     st.markdown(f"""
     <div class="panel">
@@ -806,6 +789,10 @@ with tab1:
                 else:
                     st.info(impact_label)
 
+    # =========================
+    # TREASURY ALERTS
+    # =========================
+
     st.markdown(f"""
     <div class="panel">
         <div class="panel-title">{T["alerts"]}</div>
@@ -881,11 +868,6 @@ with tab1:
             st.success(f"✅ {alert['title']} — {alert['message']}")
         else:
             st.info(f"ℹ️ {alert['title']} — {alert['message']}")
-
-
-# =========================
-# TAB 2 — TREASURY
-# =========================
 
 with tab2:
 
@@ -976,11 +958,6 @@ with tab2:
     </div>
     """, unsafe_allow_html=True)
 
-
-# =========================
-# TAB 3 — FORECAST
-# =========================
-
 with tab3:
 
     st.markdown(f"""
@@ -1070,6 +1047,7 @@ with tab3:
             scenario_name = scenario_name.replace("Growth Case", "Escenario Crecimiento")
 
         with col:
+
             with st.container(border=True):
 
                 st.markdown(f"### {scenario_name}")
@@ -1121,12 +1099,11 @@ with tab3:
         hide_index=True
     )
 
-
-# =========================
-# TAB 4 — REPORTS
-# =========================
-
 with tab4:
+
+    # =========================
+    # MULTI COMPANY DASHBOARD
+    # =========================
 
     st.markdown(f"""
     <div class="panel">
@@ -1142,7 +1119,7 @@ with tab4:
            }
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True) 
 
     all_companies = get_companies()
 
@@ -1187,92 +1164,26 @@ with tab4:
             )
 
         multi_rows.append({
-            "Empresa" if language == "Español" else "Company": company_name,
-            "Caja" if language == "Español" else "Cash": f"€{simulated_cash:,.0f}",
-            "Runway": f"{simulated_runway:.1f} {T['months']}",
-            "Treasury Score": f"{simulated_score:.0f}",
-            "Estado" if language == "Español" else "Status": status
+            "Empresa" if language == "Español" else "Company":
+                company_name,
+
+            "Caja" if language == "Español" else "Cash":
+                f"€{simulated_cash:,.0f}",
+
+            "Runway":
+                f"{simulated_runway:.1f} {T['months']}",
+
+            "Treasury Score":
+                f"{simulated_score:.0f}",
+
+            "Estado" if language == "Español" else "Status":
+                status
         })
 
     multi_df = pd.DataFrame(multi_rows)
 
     st.dataframe(
         multi_df,
-        use_container_width=True,
-        hide_index=True
-    )
-
-    st.markdown(f"""
-    <div class="panel">
-        <div class="panel-title">{T["save_analysis"]}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if selected_company_id is not None:
-        if st.button(T["save_analysis"]):
-            save_analysis(selected_company_id, metrics)
-            st.success(T["saved_ok"])
-    else:
-        st.warning(T["save_warning"])
-
-    st.markdown(f"""
-    <div class="panel">
-        <div class="panel-title">{T["generate_pdf"]}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if st.button(T["generate_pdf"]):
-        pdf_path = generate_treasury_report(metrics)
-
-        with open(pdf_path, "rb") as pdf_file:
-            st.download_button(
-                label=T["download_pdf"],
-                data=pdf_file,
-                file_name="parbat_treasury_report.pdf",
-                mime="application/pdf"
-            )
-
-    if selected_company_id is not None:
-        analyses = get_company_analyses(selected_company_id)
-
-        st.markdown(f"""
-        <div class="panel">
-            <div class="panel-title">{T["history"]}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        if analyses:
-            history_df = pd.DataFrame(
-                analyses,
-                columns=[
-                    "created_at",
-                    "current_cash",
-                    "excess_liquidity",
-                    "treasury_score",
-                    "projected_30_day_balance",
-                    "suggested_deployable_cash"
-                ]
-            )
-
-            history_df["created_at"] = pd.to_datetime(history_df["created_at"])
-            history_df = history_df.sort_values("created_at")
-
-            st.dataframe(
-                history_df,
-                use_container_width=True,
-                hide_index=True
-            )
-        else:
-            st.info("No saved analyses yet.")
-
-    st.markdown(f"""
-    <div class="panel">
-        <div class="panel-title">{T["transactions"]}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.dataframe(
-        metrics["df"],
         use_container_width=True,
         hide_index=True
     )
